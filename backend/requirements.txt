@@ -1,0 +1,16 @@
+Flask
+Flask-Cors
+Flask-SQLAlchemy
+Flask-Migrate
+Flask-JWT-Extended
+psycopg2-binary
+python-dotenv
+Werkzeug
+email-validator
+pdfplumber
+PyMuPDF
+sentence-transformers
+scikit-learn
+pandas
+numpy
+pytest
