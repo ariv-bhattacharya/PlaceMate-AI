@@ -1,4 +1,6 @@
+
 from datetime import datetime
+
 from app.extensions import db
 
 
@@ -32,18 +34,41 @@ class Student(db.Model):
     github_url = db.Column(db.String(255))
     portfolio_url = db.Column(db.String(255))
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
 
-    user = db.relationship("User", back_populates="student_profile")
+    # Relationship with User
+    user = db.relationship(
+        "User",
+        back_populates="student_profile"
+    )
 
+    # Relationship with Applications
     applications = db.relationship(
         "Application",
         back_populates="student",
         cascade="all, delete-orphan"
     )
 
+    # Relationship with Resumes
     resumes = db.relationship(
         "Resume",
+        back_populates="student",
+        cascade="all, delete-orphan"
+    )
+
+    # Relationship with Projects
+    projects = db.relationship(
+        "Project",
+        back_populates="student",
+        cascade="all, delete-orphan"
+    )
+
+    # Relationship with Internships
+    internships = db.relationship(
+        "Internship",
         back_populates="student",
         cascade="all, delete-orphan"
     )

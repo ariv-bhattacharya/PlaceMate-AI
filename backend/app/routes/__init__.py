@@ -13,6 +13,9 @@ from app.routes.analytics_routes import analytics_bp
 from app.routes.application_routes import application_bp
 from app.routes.recruiter_routes import recruiter_bp
 from app.routes.admin_routes import admin_bp
+from app.routes.ai_routes import ai_bp
+from app.routes.roadmap_routes import roadmap_bp
+from app.routes.profile_routes import profile_bp
 
 
 # ==================================================
@@ -44,6 +47,9 @@ def register_routes(app):
 
     # Student features
     app.register_blueprint(student_bp)
+    app.register_blueprint(ai_bp)
+    app.register_blueprint(roadmap_bp)
+    app.register_blueprint(profile_bp)
     app.register_blueprint(resume_bp)
     app.register_blueprint(job_bp)
     app.register_blueprint(analytics_bp)

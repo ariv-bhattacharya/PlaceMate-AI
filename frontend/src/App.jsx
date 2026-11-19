@@ -21,6 +21,8 @@ import StudentProfile from "./pages/student/StudentProfile";
 import ResumeAnalysis from "./pages/student/ResumeAnalysis";
 import SkillGapAnalysis from "./pages/student/SkillGapAnalysis";
 import MyApplications from "./pages/student/MyApplications";
+import CareerMentor from "./pages/student/CareerMentor";
+import CareerRoadmap from "./pages/student/CareerRoadmap";
 
 // Recruiter pages
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
@@ -36,9 +38,9 @@ import AdminManageJobs from "./pages/admin/ManageJobs";
 import ManageApplications from "./pages/admin/ManageApplications";
 
 
-/* ----------------------------------
-   ROLE-BASED DASHBOARD REDIRECTION
------------------------------------ */
+// ==================================================
+// ROLE-BASED DASHBOARD REDIRECTION
+// ==================================================
 
 function getDashboardPath(role) {
   switch (role) {
@@ -57,9 +59,9 @@ function getDashboardPath(role) {
 }
 
 
-/* ----------------------------------
-   ROLE PROTECTION
------------------------------------ */
+// ==================================================
+// ROLE PROTECTION
+// ==================================================
 
 function RequireRole({ role, children }) {
   const { isAuthenticated, loading, user } = useAuth();
@@ -85,9 +87,9 @@ function RequireRole({ role, children }) {
 }
 
 
-/* ----------------------------------
-   PUBLIC ROUTE PROTECTION
------------------------------------ */
+// ==================================================
+// PUBLIC ROUTE PROTECTION
+// ==================================================
 
 function PublicOnlyRoute({ children }) {
   const { isAuthenticated, loading, user } = useAuth();
@@ -109,15 +111,17 @@ function PublicOnlyRoute({ children }) {
 }
 
 
-/* ----------------------------------
-   APPLICATION ROUTES
------------------------------------ */
+// ==================================================
+// APPLICATION ROUTES
+// ==================================================
 
 function AppRoutes() {
   return (
     <Routes>
 
-      {/* PUBLIC ROUTES */}
+      {/* ==========================================
+          PUBLIC ROUTES
+      ========================================== */}
 
       <Route
         path="/"
@@ -143,7 +147,9 @@ function AppRoutes() {
       />
 
 
-      {/* STUDENT ROUTES */}
+      {/* ==========================================
+          STUDENT ROUTES
+      ========================================== */}
 
       <Route
         path="/student/dashboard"
@@ -199,8 +205,32 @@ function AppRoutes() {
         }
       />
 
+      {/* AI CAREER MENTOR */}
 
-      {/* RECRUITER ROUTES */}
+      <Route
+        path="/student/career-mentor"
+        element={
+          <RequireRole role="student">
+            <CareerMentor />
+          </RequireRole>
+        }
+      />
+
+      {/* AI CAREER ROADMAP - NEW */}
+
+      <Route
+        path="/student/career-roadmap"
+        element={
+          <RequireRole role="student">
+            <CareerRoadmap />
+          </RequireRole>
+        }
+      />
+
+
+      {/* ==========================================
+          RECRUITER ROUTES
+      ========================================== */}
 
       <Route
         path="/recruiter/dashboard"
@@ -211,7 +241,6 @@ function AppRoutes() {
         }
       />
 
-      {/* Recruiter Manage Jobs */}
       <Route
         path="/recruiter/jobs"
         element={
@@ -221,7 +250,6 @@ function AppRoutes() {
         }
       />
 
-      {/* Recruiter Create Job */}
       <Route
         path="/recruiter/create-job"
         element={
@@ -231,7 +259,6 @@ function AppRoutes() {
         }
       />
 
-      {/* Recruiter Applicants */}
       <Route
         path="/recruiter/applicants"
         element={
@@ -242,7 +269,9 @@ function AppRoutes() {
       />
 
 
-      {/* ADMIN ROUTES */}
+      {/* ==========================================
+          ADMIN ROUTES
+      ========================================== */}
 
       <Route
         path="/admin/dashboard"
@@ -290,7 +319,9 @@ function AppRoutes() {
       />
 
 
-      {/* FALLBACK ROUTE */}
+      {/* ==========================================
+          FALLBACK ROUTE
+      ========================================== */}
 
       <Route
         path="*"
@@ -302,9 +333,9 @@ function AppRoutes() {
 }
 
 
-/* ----------------------------------
-   MAIN APP COMPONENT
------------------------------------ */
+// ==================================================
+// MAIN APP COMPONENT
+// ==================================================
 
 export default function App() {
   return (

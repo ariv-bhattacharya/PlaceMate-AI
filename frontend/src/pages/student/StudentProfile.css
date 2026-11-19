@@ -1,4 +1,8 @@
 
+/* =========================================
+   STUDENT PROFILE - MAIN PAGE
+========================================= */
+
 .profile-page {
   min-height: 100vh;
   padding: 36px;
@@ -41,6 +45,14 @@
   text-decoration: none;
   font-weight: 700;
 }
+
+.profile-back-link:hover {
+  background: #eeecff;
+}
+
+/* =========================================
+   PROFILE OVERVIEW
+========================================= */
 
 .profile-overview {
   display: flex;
@@ -90,6 +102,10 @@
   font-weight: 700;
 }
 
+/* =========================================
+   PROFILE SECTIONS
+========================================= */
+
 .profile-section {
   padding: 25px;
   margin-bottom: 22px;
@@ -103,6 +119,10 @@
   margin: 0 0 22px;
   font-size: 18px;
 }
+
+/* =========================================
+   ACADEMIC AND CONTACT INFORMATION
+========================================= */
 
 .profile-fields-grid {
   display: grid;
@@ -147,6 +167,10 @@
   overflow-wrap: anywhere;
 }
 
+/* =========================================
+   BUTTONS
+========================================= */
+
 .profile-primary-btn,
 .profile-cancel-btn {
   padding: 12px 19px;
@@ -162,6 +186,10 @@
   color: white;
 }
 
+.profile-primary-btn:hover {
+  background: #5143c5;
+}
+
 .profile-primary-btn:disabled,
 .profile-cancel-btn:disabled {
   opacity: 0.6;
@@ -174,12 +202,20 @@
   color: #475569;
 }
 
+.profile-cancel-btn:hover {
+  background: #f7f8fc;
+}
+
 .profile-form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
   margin-bottom: 22px;
 }
+
+/* =========================================
+   EXTRACTED SKILLS
+========================================= */
 
 .skills-heading {
   display: flex;
@@ -228,6 +264,10 @@
   font-size: 13px;
 }
 
+/* =========================================
+   ALERTS AND LOADING
+========================================= */
+
 .profile-alert {
   padding: 13px 16px;
   margin-bottom: 18px;
@@ -258,6 +298,221 @@
   color: #b42318;
 }
 
+/* =========================================
+   PROJECTS AND INTERNSHIP HEADINGS
+========================================= */
+
+.profile-record-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.profile-record-heading h2 {
+  margin: 0 0 7px;
+  font-size: 20px;
+}
+
+.profile-record-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   PROJECT AND INTERNSHIP CARDS
+========================================= */
+
+.profile-record-list {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-record-card {
+  padding: 22px;
+  border: 1px solid #e7e9f0;
+  border-radius: 12px;
+  background: #ffffff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.profile-record-card:hover {
+  border-color: #c9c3ff;
+  box-shadow: 0 5px 18px rgba(98, 84, 217, 0.07);
+}
+
+.profile-record-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.profile-record-top h3 {
+  margin: 0 0 9px;
+  color: #172033;
+  font-size: 18px;
+}
+
+.profile-company-name {
+  margin: 0 0 10px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.profile-status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #eeecff;
+  color: #6254d9;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.profile-record-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.profile-edit-btn,
+.profile-delete-btn {
+  padding: 8px 13px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.profile-edit-btn {
+  border: 1px solid #6254d9;
+  background: #ffffff;
+  color: #6254d9;
+}
+
+.profile-edit-btn:hover {
+  background: #eeecff;
+}
+
+.profile-delete-btn {
+  border: 1px solid #f1c5c2;
+  background: #fff7f6;
+  color: #b42318;
+}
+
+.profile-delete-btn:hover {
+  background: #ffe9e6;
+}
+
+.profile-record-description {
+  margin: 16px 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.profile-record-date {
+  margin: 16px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.profile-record-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.profile-record-links a {
+  color: #6254d9;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.profile-record-links a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   ADD AND EDIT FORMS
+========================================= */
+
+.profile-record-form {
+  padding: 22px;
+  margin-bottom: 22px;
+  border: 1px solid #dcd8ff;
+  border-radius: 12px;
+  background: #faf9ff;
+}
+
+.profile-record-form h3 {
+  margin: 0 0 20px;
+  color: #172033;
+  font-size: 17px;
+}
+
+.profile-record-form .profile-field {
+  margin-bottom: 18px;
+}
+
+.profile-record-form .profile-field input,
+.profile-record-form .profile-field select,
+.profile-record-form .profile-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 13px;
+  border: 1px solid #dce0eb;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.profile-record-form .profile-field textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.profile-record-form .profile-field input:focus,
+.profile-record-form .profile-field select:focus,
+.profile-record-form .profile-field textarea:focus {
+  border-color: #6254d9;
+  box-shadow: 0 0 0 3px rgba(98, 84, 217, 0.1);
+}
+
+.profile-full-field {
+  margin-top: 18px;
+}
+
+.profile-full-field label {
+  display: block;
+  margin-bottom: 9px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-record-form .profile-form-actions {
+  margin: 20px 0 0;
+}
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
 @media (max-width: 650px) {
   .profile-page {
     padding: 20px 14px;
@@ -284,5 +539,34 @@
 
   .profile-section {
     padding: 18px;
+  }
+
+  .profile-record-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-record-heading button {
+    width: 100%;
+  }
+
+  .profile-record-card {
+    padding: 16px;
+  }
+
+  .profile-record-top {
+    flex-direction: column;
+  }
+
+  .profile-record-actions {
+    width: 100%;
+  }
+
+  .profile-record-actions button {
+    flex: 1;
+  }
+
+  .profile-record-form {
+    padding: 16px;
   }
 }

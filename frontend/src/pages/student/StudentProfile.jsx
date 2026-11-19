@@ -1,7 +1,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { apiGet, apiPatch } from "../../services/api";
+import {
+  apiGet,
+  apiPost,
+  apiPatch,
+  apiDelete,
+} from "../../services/api";
 import "./StudentProfile.css";
 
 const initialForm = {
@@ -18,9 +23,61 @@ const initialForm = {
   portfolio_url: "",
 };
 
+const initialProject = {
+  title: "",
+  description: "",
+  technologies: "",
+  github_url: "",
+  live_url: "",
+  start_date: "",
+  end_date: "",
+  status: "completed",
+};
+
+const initialInternship = {
+  company_name: "",
+  role: "",
+  description: "",
+  skills_used: "",
+  start_date: "",
+  end_date: "",
+  status: "completed",
+};
+
+const formatDate = (date) => {
+  if (!date) return "Not specified";
+
+  return new Date(`${date}T00:00:00`).toLocaleDateString(
+    "en-IN",
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }
+  );
+};
+
+const parseList = (value) =>
+  value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
 export default function StudentProfile() {
   const [profile, setProfile] = useState(null);
   const [formData, setFormData] = useState(initialForm);
+
+  const [projects, setProjects] = useState([]);
+  const [internships, setInternships] = useState([]);
+
+  const [projectForm, setProjectForm] = useState(initialProject);
+  const [internshipForm, setInternshipForm] = useState(initialInternship);
+
+  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [editingInternshipId, setEditingInternshipId] = useState(null);
+
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [showInternshipForm, setShowInternshipForm] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -28,6 +85,7 @@ export default function StudentProfile() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [recordError, setRecordError] = useState("");
 
   const loadProfile = useCallback(async () => {
     setLoading(true);
@@ -60,9 +118,33 @@ export default function StudentProfile() {
     }
   }, []);
 
+  const loadProjects = useCallback(async () => {
+    try {
+      const response = await apiGet("/profile/projects");
+      setProjects(response.data || []);
+    } catch (err) {
+      setRecordError(
+        err.message || "Unable to load projects."
+      );
+    }
+  }, []);
+
+  const loadInternships = useCallback(async () => {
+    try {
+      const response = await apiGet("/profile/internships");
+      setInternships(response.data || []);
+    } catch (err) {
+      setRecordError(
+        err.message || "Unable to load internships."
+      );
+    }
+  }, []);
+
   useEffect(() => {
     loadProfile();
-  }, [loadProfile]);
+    loadProjects();
+    loadInternships();
+  }, [loadProfile, loadProjects, loadInternships]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -116,7 +198,9 @@ export default function StudentProfile() {
         payload[field] = Number(payload[field]);
 
         if (!Number.isFinite(payload[field])) {
-          setError(`Please enter a valid ${field.replaceAll("_", " ")}.`);
+          setError(
+            `Please enter a valid ${field.replaceAll("_", " ")}.`
+          );
           return;
         }
       }
@@ -134,6 +218,165 @@ export default function StudentProfile() {
       setError(err.message || "Unable to update profile.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const resetProjectForm = () => {
+    setProjectForm(initialProject);
+    setEditingProjectId(null);
+    setShowProjectForm(false);
+  };
+
+  const resetInternshipForm = () => {
+    setInternshipForm(initialInternship);
+    setEditingInternshipId(null);
+    setShowInternshipForm(false);
+  };
+
+  const handleProjectSubmit = async (event) => {
+    event.preventDefault();
+
+    setRecordError("");
+    setSuccess("");
+
+    const payload = {
+      ...projectForm,
+      technologies: parseList(projectForm.technologies),
+      start_date: projectForm.start_date || null,
+      end_date: projectForm.end_date || null,
+      github_url: projectForm.github_url.trim() || null,
+      live_url: projectForm.live_url.trim() || null,
+      description: projectForm.description.trim() || null,
+    };
+
+    setSaving(true);
+
+    try {
+      if (editingProjectId) {
+        await apiPatch(
+          `/profile/projects/${editingProjectId}`,
+          payload
+        );
+        setSuccess("Project updated successfully.");
+      } else {
+        await apiPost("/profile/projects", payload);
+        setSuccess("Project added successfully.");
+      }
+
+      resetProjectForm();
+      await loadProjects();
+    } catch (err) {
+      setRecordError(err.message || "Unable to save project.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleInternshipSubmit = async (event) => {
+    event.preventDefault();
+
+    setRecordError("");
+    setSuccess("");
+
+    const payload = {
+      ...internshipForm,
+      skills_used: parseList(internshipForm.skills_used),
+      start_date: internshipForm.start_date || null,
+      end_date: internshipForm.end_date || null,
+      description: internshipForm.description.trim() || null,
+    };
+
+    setSaving(true);
+
+    try {
+      if (editingInternshipId) {
+        await apiPatch(
+          `/profile/internships/${editingInternshipId}`,
+          payload
+        );
+        setSuccess("Internship updated successfully.");
+      } else {
+        await apiPost("/profile/internships", payload);
+        setSuccess("Internship added successfully.");
+      }
+
+      resetInternshipForm();
+      await loadInternships();
+    } catch (err) {
+      setRecordError(err.message || "Unable to save internship.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const startProjectEdit = (project) => {
+    setProjectForm({
+      title: project.title || "",
+      description: project.description || "",
+      technologies: (project.technologies || []).join(", "),
+      github_url: project.github_url || "",
+      live_url: project.live_url || "",
+      start_date: project.start_date || "",
+      end_date: project.end_date || "",
+      status: project.status || "completed",
+    });
+
+    setEditingProjectId(project.id);
+    setShowProjectForm(true);
+    setRecordError("");
+  };
+
+  const startInternshipEdit = (internship) => {
+    setInternshipForm({
+      company_name: internship.company_name || "",
+      role: internship.role || "",
+      description: internship.description || "",
+      skills_used: (internship.skills_used || []).join(", "),
+      start_date: internship.start_date || "",
+      end_date: internship.end_date || "",
+      status: internship.status || "completed",
+    });
+
+    setEditingInternshipId(internship.id);
+    setShowInternshipForm(true);
+    setRecordError("");
+  };
+
+  const handleProjectDelete = async (projectId) => {
+    if (!window.confirm("Are you sure you want to delete this project?")) {
+      return;
+    }
+
+    setRecordError("");
+    setSuccess("");
+
+    try {
+      await apiDelete(`/profile/projects/${projectId}`);
+      setSuccess("Project deleted successfully.");
+      await loadProjects();
+    } catch (err) {
+      setRecordError(err.message || "Unable to delete project.");
+    }
+  };
+
+  const handleInternshipDelete = async (internshipId) => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this internship?"
+      )
+    ) {
+      return;
+    }
+
+    setRecordError("");
+    setSuccess("");
+
+    try {
+      await apiDelete(`/profile/internships/${internshipId}`);
+      setSuccess("Internship deleted successfully.");
+      await loadInternships();
+    } catch (err) {
+      setRecordError(err.message || "Unable to delete internship.");
     }
   };
 
@@ -235,6 +478,12 @@ export default function StudentProfile() {
         </div>
       )}
 
+      {recordError && (
+        <div className="profile-alert profile-alert-error" role="alert">
+          {recordError}
+        </div>
+      )}
+
       {success && (
         <div className="profile-alert profile-alert-success" role="status">
           {success}
@@ -320,6 +569,8 @@ export default function StudentProfile() {
         )}
       </form>
 
+      {/* EXTRACTED SKILLS */}
+
       <section className="profile-section">
         <div className="skills-heading">
           <div>
@@ -342,6 +593,508 @@ export default function StudentProfile() {
           <p className="profile-empty">
             No skills found. Upload your resume to extract skills.
           </p>
+        )}
+      </section>
+
+      {/* PROJECTS SECTION */}
+
+      <section className="profile-section">
+        <div className="profile-record-heading">
+          <div>
+            <h2>My Projects</h2>
+            <p>Showcase your academic and personal projects.</p>
+          </div>
+
+          <button
+            type="button"
+            className="profile-primary-btn"
+            onClick={() => {
+              resetProjectForm();
+              setShowProjectForm(true);
+              setRecordError("");
+            }}
+          >
+            + Add Project
+          </button>
+        </div>
+
+        {showProjectForm && (
+          <form
+            className="profile-record-form"
+            onSubmit={handleProjectSubmit}
+          >
+            <h3>
+              {editingProjectId ? "Edit Project" : "Add New Project"}
+            </h3>
+
+            <div className="profile-fields-grid">
+              <div className="profile-field">
+                <label>Project Title *</label>
+                <input
+                  required
+                  value={projectForm.title}
+                  onChange={(e) =>
+                    setProjectForm({
+                      ...projectForm,
+                      title: e.target.value,
+                    })
+                  }
+                  placeholder="Enter project title"
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>Technologies</label>
+                <input
+                  value={projectForm.technologies}
+                  onChange={(e) =>
+                    setProjectForm({
+                      ...projectForm,
+                      technologies: e.target.value,
+                    })
+                  }
+                  placeholder="Python, SQL, Streamlit"
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>GitHub URL</label>
+                <input
+                  type="url"
+                  value={projectForm.github_url}
+                  onChange={(e) =>
+                    setProjectForm({
+                      ...projectForm,
+                      github_url: e.target.value,
+                    })
+                  }
+                  placeholder="https://github.com/..."
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>Live Demo URL</label>
+                <input
+                  type="url"
+                  value={projectForm.live_url}
+                  onChange={(e) =>
+                    setProjectForm({
+                      ...projectForm,
+                      live_url: e.target.value,
+                    })
+                  }
+                  placeholder="https://..."
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>Start Date</label>
+                <input
+                  type="date"
+                  value={projectForm.start_date}
+                  onChange={(e) =>
+                    setProjectForm({
+                      ...projectForm,
+                      start_date: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>End Date</label>
+                <input
+                  type="date"
+                  value={projectForm.end_date}
+                  onChange={(e) =>
+                    setProjectForm({
+                      ...projectForm,
+                      end_date: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>Status</label>
+                <select
+                  value={projectForm.status}
+                  onChange={(e) =>
+                    setProjectForm({
+                      ...projectForm,
+                      status: e.target.value,
+                    })
+                  }
+                >
+                  <option value="ongoing">Ongoing</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="profile-field profile-full-field">
+              <label>Description</label>
+              <textarea
+                rows="4"
+                value={projectForm.description}
+                onChange={(e) =>
+                  setProjectForm({
+                    ...projectForm,
+                    description: e.target.value,
+                  })
+                }
+                placeholder="Describe your project..."
+              />
+            </div>
+
+            <div className="profile-form-actions">
+              <button
+                type="button"
+                className="profile-cancel-btn"
+                onClick={resetProjectForm}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                className="profile-primary-btn"
+                disabled={saving}
+              >
+                {saving
+                  ? "Saving..."
+                  : editingProjectId
+                    ? "Update Project"
+                    : "Save Project"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {projects.length > 0 ? (
+          <div className="profile-record-list">
+            {projects.map((project) => (
+              <article className="profile-record-card" key={project.id}>
+                <div className="profile-record-top">
+                  <div>
+                    <h3>{project.title}</h3>
+                    <span className="profile-status">
+                      {project.status}
+                    </span>
+                  </div>
+
+                  <div className="profile-record-actions">
+                    <button
+                      type="button"
+                      className="profile-edit-btn"
+                      onClick={() => startProjectEdit(project)}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      className="profile-delete-btn"
+                      onClick={() => handleProjectDelete(project.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+
+                {project.description && (
+                  <p className="profile-record-description">
+                    {project.description}
+                  </p>
+                )}
+
+                {project.technologies?.length > 0 && (
+                  <div className="profile-skills-list">
+                    {project.technologies.map((technology, index) => (
+                      <span
+                        className="profile-skill"
+                        key={`${technology}-${index}`}
+                      >
+                        {technology}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <p className="profile-record-date">
+                  {formatDate(project.start_date)} –{" "}
+                  {formatDate(project.end_date)}
+                </p>
+
+                <div className="profile-record-links">
+                  {project.github_url && (
+                    <a
+                      href={project.github_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      GitHub Repository ↗
+                    </a>
+                  )}
+
+                  {project.live_url && (
+                    <a
+                      href={project.live_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Live Demo ↗
+                    </a>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          !showProjectForm && (
+            <p className="profile-empty">
+              No projects added yet. Click Add Project to showcase your work.
+            </p>
+          )
+        )}
+      </section>
+
+      {/* INTERNSHIP SECTION */}
+
+      <section className="profile-section">
+        <div className="profile-record-heading">
+          <div>
+            <h2>Internship Experience</h2>
+            <p>Showcase your professional training and internship experience.</p>
+          </div>
+
+          <button
+            type="button"
+            className="profile-primary-btn"
+            onClick={() => {
+              resetInternshipForm();
+              setShowInternshipForm(true);
+              setRecordError("");
+            }}
+          >
+            + Add Internship
+          </button>
+        </div>
+
+        {showInternshipForm && (
+          <form
+            className="profile-record-form"
+            onSubmit={handleInternshipSubmit}
+          >
+            <h3>
+              {editingInternshipId
+                ? "Edit Internship"
+                : "Add Internship Experience"}
+            </h3>
+
+            <div className="profile-fields-grid">
+              <div className="profile-field">
+                <label>Company Name *</label>
+                <input
+                  required
+                  value={internshipForm.company_name}
+                  onChange={(e) =>
+                    setInternshipForm({
+                      ...internshipForm,
+                      company_name: e.target.value,
+                    })
+                  }
+                  placeholder="Enter company name"
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>Job Role *</label>
+                <input
+                  required
+                  value={internshipForm.role}
+                  onChange={(e) =>
+                    setInternshipForm({
+                      ...internshipForm,
+                      role: e.target.value,
+                    })
+                  }
+                  placeholder="Enter your role"
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>Start Date</label>
+                <input
+                  type="date"
+                  value={internshipForm.start_date}
+                  onChange={(e) =>
+                    setInternshipForm({
+                      ...internshipForm,
+                      start_date: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>End Date</label>
+                <input
+                  type="date"
+                  value={internshipForm.end_date}
+                  onChange={(e) =>
+                    setInternshipForm({
+                      ...internshipForm,
+                      end_date: e.target.value,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>Skills Used</label>
+                <input
+                  value={internshipForm.skills_used}
+                  onChange={(e) =>
+                    setInternshipForm({
+                      ...internshipForm,
+                      skills_used: e.target.value,
+                    })
+                  }
+                  placeholder="Python, Machine Learning, SQL"
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>Status</label>
+                <select
+                  value={internshipForm.status}
+                  onChange={(e) =>
+                    setInternshipForm({
+                      ...internshipForm,
+                      status: e.target.value,
+                    })
+                  }
+                >
+                  <option value="applied">Applied</option>
+                  <option value="ongoing">Ongoing</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="profile-field profile-full-field">
+              <label>Description</label>
+              <textarea
+                rows="4"
+                value={internshipForm.description}
+                onChange={(e) =>
+                  setInternshipForm({
+                    ...internshipForm,
+                    description: e.target.value,
+                  })
+                }
+                placeholder="Describe your internship experience..."
+              />
+            </div>
+
+            <div className="profile-form-actions">
+              <button
+                type="button"
+                className="profile-cancel-btn"
+                onClick={resetInternshipForm}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                className="profile-primary-btn"
+                disabled={saving}
+              >
+                {saving
+                  ? "Saving..."
+                  : editingInternshipId
+                    ? "Update Internship"
+                    : "Save Internship"}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {internships.length > 0 ? (
+          <div className="profile-record-list">
+            {internships.map((internship) => (
+              <article
+                className="profile-record-card"
+                key={internship.id}
+              >
+                <div className="profile-record-top">
+                  <div>
+                    <h3>{internship.role}</h3>
+                    <p className="profile-company-name">
+                      {internship.company_name}
+                    </p>
+                    <span className="profile-status">
+                      {internship.status}
+                    </span>
+                  </div>
+
+                  <div className="profile-record-actions">
+                    <button
+                      type="button"
+                      className="profile-edit-btn"
+                      onClick={() => startInternshipEdit(internship)}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      className="profile-delete-btn"
+                      onClick={() =>
+                        handleInternshipDelete(internship.id)
+                      }
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+
+                {internship.description && (
+                  <p className="profile-record-description">
+                    {internship.description}
+                  </p>
+                )}
+
+                {internship.skills_used?.length > 0 && (
+                  <div className="profile-skills-list">
+                    {internship.skills_used.map((skill, index) => (
+                      <span
+                        className="profile-skill"
+                        key={`${skill}-${index}`}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <p className="profile-record-date">
+                  {formatDate(internship.start_date)} –{" "}
+                  {formatDate(internship.end_date)}
+                </p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          !showInternshipForm && (
+            <p className="profile-empty">
+              No internship experience added yet.
+            </p>
+          )
         )}
       </section>
     </main>

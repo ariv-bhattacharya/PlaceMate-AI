@@ -37,6 +37,10 @@ export default function StudentDashboard() {
             My Applications
           </Link>
 
+          <Link to="/student/career-roadmap" style={styles.navLink}>
+            Career Roadmap
+          </Link>
+
           <button onClick={handleLogout} style={styles.logoutButton}>
             Logout
           </button>
@@ -112,7 +116,7 @@ export default function StudentDashboard() {
             </Link>
           </div>
 
-          {/* My Applications - NEW */}
+          {/* My Applications */}
           <div style={styles.card}>
             <div style={styles.cardIcon}>✓</div>
             <h3>My Applications</h3>
@@ -125,8 +129,38 @@ export default function StudentDashboard() {
               Track Applications →
             </Link>
           </div>
+
+          {/* AI Career Mentor */}
+          <div style={styles.card}>
+            <div style={styles.cardIcon}>✦</div>
+            <h3>AI Career Mentor</h3>
+            <p>
+              Get personalized career guidance, explore suitable job roles,
+              identify skill gaps and get career preparation advice.
+            </p>
+
+            <Link to="/student/career-mentor" style={styles.button}>
+              Talk to Career Mentor →
+            </Link>
+          </div>
+
+          {/* NEW: AI Career Roadmap */}
+          <div style={styles.roadmapCard}>
+            <div style={styles.roadmapIcon}>⌖</div>
+            <h3>AI Career Roadmap</h3>
+            <p>
+              Generate personalized AI-powered career roadmaps with
+              daily learning tasks, weekly milestones, skill development
+              and progress tracking.
+            </p>
+
+            <Link to="/student/career-roadmap" style={styles.button}>
+              Open Career Roadmap →
+            </Link>
+          </div>
         </div>
 
+        {/* Account Information */}
         <div style={styles.profileCard}>
           <h3>Your Account</h3>
 
@@ -225,6 +259,14 @@ const styles = {
     border: "1px solid #e8eaf1",
   },
 
+  roadmapCard: {
+    padding: "28px",
+    borderRadius: "14px",
+    background: "#ffffff",
+    border: "2px solid #6254d9",
+    boxShadow: "0 4px 16px rgba(98, 84, 217, 0.08)",
+  },
+
   cardIcon: {
     width: "42px",
     height: "42px",
@@ -234,6 +276,19 @@ const styles = {
     borderRadius: "10px",
     background: "#eeecff",
     color: "#6254d9",
+    fontSize: "25px",
+    fontWeight: "bold",
+  },
+
+  roadmapIcon: {
+    width: "42px",
+    height: "42px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "10px",
+    background: "#6254d9",
+    color: "#ffffff",
     fontSize: "25px",
     fontWeight: "bold",
   },

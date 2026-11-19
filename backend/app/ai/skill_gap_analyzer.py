@@ -76,6 +76,25 @@ CAREER_SKILLS = {
             "rest api"
         ]
     },
+        "AI/ML Engineer": {
+        "required": [
+            "python",
+            "statistics",
+            "machine learning",
+            "deep learning",
+            "data preprocessing",
+            "scikit-learn",
+            "model evaluation"
+        ],
+        "optional": [
+            "tensorflow",
+            "pytorch",
+            "numpy",
+            "docker",
+            "rest api"
+        ]
+    },
+
 
     "Software Developer": {
         "required": [
